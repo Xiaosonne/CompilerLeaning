@@ -137,4 +137,13 @@ namespace ZXLanguage
             return s.Insert(s.IndexOf('>') + 1 + Position, "·");
         }
     }
+    public class SLRMapItem {
+        public string State { get; set; }
+        public string ActionOrGoto { get; set; }
+        //s push
+        //r specification
+        //a accept
+        //n goto
+        public string SRA { get; set; }
+    }
 }

@@ -10,13 +10,31 @@ namespace ZXLanguage
         static void Main(string[] args)
         {
             Language lan = new Language();
-            //lan.DefineQueryTerm("E'").AddTerms("E");
-            //lan.DefineQueryTerm("E").AddTerms("E+T");
-            //lan.DefineQueryTerm("E").AddTerms("T");
-            //lan.DefineQueryTerm("T").AddTerms("T*F");
-            //lan.DefineQueryTerm("T").AddTerms("F");
-            //lan.DefineQueryTerm("F").AddTerms("(E)");
-            //lan.DefineQueryTerm("F").AddTerms("id");
+            lan.AddQueryItem("S'->S");
+            lan.AddQueryItem("S->R|L=R");
+            lan.AddQueryItem("L->*R|id");
+            lan.AddQueryItem("R->L");
+            lan.EndAddTerms("S'");
+            var setFamily = lan.BuildItemSetFamily("S'->S");
+            foreach (var itemset in setFamily)
+            {
+                Console.WriteLine("->\t" + itemset.Name + "\t\t" + itemset.ToString());
+            }
+            var lis = lan.GenStateDFA();
+            foreach (var s in lis)
+            {
+                Console.WriteLine(s);
+            }
+            lis = lan.GenSLRAction("S'->S");
+            foreach (var s in lis)
+            {
+                Console.WriteLine(s);
+            }
+            Console.Read();
+        }
+
+        private static void SLR(Language lan)
+        {
             lan.AddQueryItem("E'->E");
             lan.AddQueryItem("E->E+T");
             lan.AddQueryItem("E->T");
@@ -24,7 +42,7 @@ namespace ZXLanguage
             lan.AddQueryItem("T->F");
             lan.AddQueryItem("F->(E)");
             lan.AddQueryItem("F->id");
-            lan.EndAddTerms("E'"); 
+            lan.EndAddTerms("E'");
             var all = lan.BuildItemSetFamily("E'->E");
             if (all.Any(p => p.Equals(all[0].Goto("T"))))
             {
@@ -32,19 +50,19 @@ namespace ZXLanguage
             }
             foreach (var ss in all)
             {
-                Console.WriteLine("->\t"+ss.Name+"\t\t"+ss.ToString());
+                Console.WriteLine("->\t" + ss.Name + "\t\t" + ss.ToString());
             }
 
             var lis = lan.GenStateDFA();
-            foreach (var s in lis) {
-                Console.WriteLine(s);
-            }
-            lis = lan.GenSLRAction();
             foreach (var s in lis)
             {
                 Console.WriteLine(s);
             }
-            Console.Read();
+            lis = lan.GenSLRAction("E'->E");
+            foreach (var s in lis)
+            {
+                Console.WriteLine(s);
+            }
         }
 
         private static void NewMethod2()

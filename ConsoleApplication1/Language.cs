@@ -42,12 +42,11 @@ namespace ZXLanguage
         }
         public void AddQueryItem(string genStr)
         {
-            var arr = genStr.Replace("->", "γ").Split('γ');
-            this.DefineQueryTerm(arr[0]);
+            var arr = genStr.Replace("->", "γ").Split('γ'); 
             var arr2 = arr[1].Split('|');
             foreach (var s in arr2)
             {
-                this.AddTerms(s);
+                this.DefineQueryTerm(arr[0]).AddTerms(s);
             }
         }
         bool endAddTerms = false;
@@ -367,8 +366,10 @@ namespace ZXLanguage
         public HashSet<string> GenStateDFA()
         {
             HashSet<String> lis = new HashSet<string>();
-            foreach (var s in itemSet) {
-                foreach (var ss in s) {
+            foreach (var s in itemSet)
+            {
+                foreach (var ss in s)
+                {
                     var sim = ss.GetDotRight();
                     if (sim == null)
                         continue;
@@ -382,30 +383,41 @@ namespace ZXLanguage
             }
             return lis;
         }
-        public HashSet<string> GenSLRAction()
+        public HashSet<string> GenSLRAction(string startAction)
         {
+
             GetFollow();
+            var act = this.GetAction(startAction);
+            var endItem = new Item() { Position = act.Count, Action = act };
             HashSet<String> lis = new HashSet<string>();
             foreach (var i in itemSet)
-            {
+            { 
+                bool end = i.Any(p => p.Equals(endItem));
                 foreach (var ss in i)
                 {
                     var sim = ss.GetDotRight();
-                    if (sim == null) {
-                        foreach (var fw in FollowSet[ss.Action.Condition]) {
-                            lis.Add(string.Format("{0} {1} 规约 {2}", i.Name, fw.SymbolChar,ss.Action)); 
+                    if (sim == null)
+                    {
+                        if (end)
+                        {
+                            lis.Add(string.Format("{0} {1} 接受", i.Name, "$"));
+                        }
+                        foreach (var fw in FollowSet[ss.Action.Condition])
+                        {
+                            lis.Add(string.Format("{0} {1} 规约 {2}", i.Name, fw.SymbolChar, ss.Action));
                         }
                         continue;
                     }
-                        
+
                     var t = i.Goto(sim.SymbolChar);
                     var sing = itemSet.SingleOrDefault(p => p.Equals(t));
-                    if (!sim.IsNonTerminalSymbol) {
+                    if (!sim.IsNonTerminalSymbol)
+                    {
                         if (sing != null)
                         {
                             lis.Add(string.Format("{0} {1} 入栈 {2}", i.Name, sim.SymbolChar, sing.Name));
                         }
-                    } 
+                    }
                 }
             }
             return lis;

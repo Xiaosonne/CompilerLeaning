@@ -10,6 +10,12 @@ namespace ZXLanguage
         static void Main(string[] args)
         {
             Language lan = new Language();
+            SLR(lan);
+            Console.Read();
+        }
+
+        private static void SLR2(Language lan)
+        {
             lan.AddQueryItem("S'->S");
             lan.AddQueryItem("S->R|L=R");
             lan.AddQueryItem("L->*R|id");
@@ -25,12 +31,16 @@ namespace ZXLanguage
             {
                 Console.WriteLine(s);
             }
-            lis = lan.GenSLRAction("S'->S");
-            foreach (var s in lis)
+            var lis2 = lan.GenSLRAction("S'->S");
+            foreach (var s in lis2.GroupBy(p => p.Row))
             {
-                Console.WriteLine(s);
+                Console.Write(s.Key + ":");
+                foreach (var ss in s)
+                {
+                    Console.Write(ss.Column + " | " + ss.Action + ",");
+                }
+                Console.WriteLine(";");
             }
-            Console.Read();
         }
 
         private static void SLR(Language lan)
@@ -58,10 +68,15 @@ namespace ZXLanguage
             {
                 Console.WriteLine(s);
             }
-            lis = lan.GenSLRAction("E'->E");
-            foreach (var s in lis)
+            var lis2 = lan.GenSLRAction("E'->E");
+            foreach (var s in lis2.GroupBy(p => p.Row))
             {
-                Console.WriteLine(s);
+                Console.Write(s.Key + "\t");
+                foreach (var ss in s)
+                {
+                    Console.Write(ss.Column + " " + ss.Action + "\t");
+                }
+                Console.WriteLine(";");
             }
         }
 

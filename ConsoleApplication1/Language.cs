@@ -42,7 +42,7 @@ namespace ZXLanguage
         }
         public void AddQueryItem(string genStr)
         {
-            var arr = genStr.Replace("->", "γ").Split('γ'); 
+            var arr = genStr.Replace("->", "γ").Split('γ');
             var arr2 = arr[1].Split('|');
             foreach (var s in arr2)
             {
@@ -383,28 +383,41 @@ namespace ZXLanguage
             }
             return lis;
         }
-        public HashSet<string> GenSLRAction(string startAction)
+        public HashSet<SLRMapItem> GenSLRAction(string startAction)
         {
 
             GetFollow();
             var act = this.GetAction(startAction);
             var endItem = new Item() { Position = act.Count, Action = act };
             HashSet<String> lis = new HashSet<string>();
+            HashSet<SLRMapItem> has = new HashSet<SLRMapItem>();
             foreach (var i in itemSet)
-            { 
+            {
                 bool end = i.Any(p => p.Equals(endItem));
                 foreach (var ss in i)
                 {
-                    var sim = ss.GetDotRight();
+                    var sim = ss.GetDotRight(); 
                     if (sim == null)
                     {
                         if (end)
                         {
-                            lis.Add(string.Format("{0} {1} 接受", i.Name, "$"));
+                            SLRMapItem map = new SLRMapItem()
+                            {
+                                Row = i.Name,
+                                Column = "$",
+                                Action = "accept"
+                            };
+                            has.Add(map); 
                         }
                         foreach (var fw in FollowSet[ss.Action.Condition])
                         {
-                            lis.Add(string.Format("{0} {1} 规约 {2}", i.Name, fw.SymbolChar, ss.Action));
+                            SLRMapItem map = new SLRMapItem()
+                            {
+                                Row = i.Name,
+                                Column = fw.SymbolChar,
+                                Action = "r " + ss.Action
+                            };
+                            has.Add(map); 
                         }
                         continue;
                     }
@@ -414,13 +427,29 @@ namespace ZXLanguage
                     if (!sim.IsNonTerminalSymbol)
                     {
                         if (sing != null)
-                        {
-                            lis.Add(string.Format("{0} {1} 入栈 {2}", i.Name, sim.SymbolChar, sing.Name));
+                        { 
+                            SLRMapItem map = new SLRMapItem()
+                            {
+                                Row = i.Name,
+                                Column = sim.SymbolChar,
+                                Action = "s " + sing.Name
+                            };
+                            has.Add(map);
                         }
+                    }
+                    else
+                    {
+                        SLRMapItem map = new SLRMapItem()
+                        {
+                            Row = i.Name,
+                            Column = sim.SymbolChar,
+                            Action = sing.Name
+                        };
+                        has.Add(map); 
                     }
                 }
             }
-            return lis;
+            return has;
         }
         private static void NextSymbol(char[] arr, ref int i, ref string str)
         {

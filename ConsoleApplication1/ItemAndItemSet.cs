@@ -10,7 +10,8 @@ namespace ZXLanguage
         string name = "";
         public void SetIndex(int index)
         {
-            name = "I" + index;
+            // name = "I" + index;
+            name = index.ToString();
         }
         public string Name
         {
@@ -137,13 +138,14 @@ namespace ZXLanguage
             return s.Insert(s.IndexOf('>') + 1 + Position, "·");
         }
     }
-    public class SLRMapItem {
-        public string State { get; set; }
-        public string ActionOrGoto { get; set; }
-        //s push
-        //r specification
-        //a accept
-        //n goto
-        public string SRA { get; set; }
+    public class SLRMapItem
+    {
+        public override int GetHashCode()
+        {
+            return (Row + Column + Action).GetHashCode();
+        }
+        public string Row { get; set; }
+        public string Column { get; set; }
+        public string Action { get; set; }
     }
 }

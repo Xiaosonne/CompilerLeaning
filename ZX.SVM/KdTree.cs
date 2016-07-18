@@ -11,14 +11,17 @@ namespace ZX.SVM
     }
     public class TkDataSet<T> : List<Xn<T>>
     {
-        public static TkDataSet<T> BuildTkDataSet(T[][] arr)
+        public static TkDataSet<T> BuildTkDataSet(T[,] arr)
         {
             TkDataSet<T> set = new TkDataSet<T>();
             for (int i = 0; i <= arr.GetUpperBound(0); i++)
             {
                 Xn<T> xn = new Xn<T>();
-                xn.X = new T[arr[i].GetUpperBound(0) + 1];
-                Array.Copy(arr[i], xn.X, arr[i].Length);
+                xn.X = new T[arr.GetUpperBound(1) + 1];
+                for (int j = 0; j <= arr.GetUpperBound(1); j++)
+                {
+                    xn.X[j] = arr[i, j];
+                }
                 set.Add(xn);
             }
             return set;

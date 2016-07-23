@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ZX.SVM
 {
@@ -6,17 +7,7 @@ namespace ZX.SVM
     {
         public static void Main(string[] args)
         {
-            int[,] arr = new int[6, 2]
-                {
-                    {2,3}, 
-                    {5,4},
-                    {9,6},
-                    {4,7},
-                    {8,1},
-                    {7,2} 
-                };
-            var dt = TkDataSet<int>.BuildTkDataSet(arr);
-            var node = KdTree.GetTreeNode(dt, 0);
+           new UnitTest1().测试Bayers();
         }
     }
 }
